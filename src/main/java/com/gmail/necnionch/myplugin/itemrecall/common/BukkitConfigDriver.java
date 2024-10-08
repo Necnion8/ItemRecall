@@ -1,4 +1,4 @@
-package com.gmail.necnionch.myplugin.bukkit.itemrecall.common;
+package com.gmail.necnionch.myplugin.itemrecall.common;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;

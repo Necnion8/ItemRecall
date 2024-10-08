@@ -1,6 +1,6 @@
 name: ItemRecall
 version: '${version}'
-main: com.gmail.necnionch.myplugin.bukkit.itemrecall.ItemRecallPlugin
+main: com.gmail.necnionch.myplugin.temrecall.bukkit.ItemRecallPlugin
 api-version: '1.13'
 author: Necnion8
 

@@ -1,4 +1,4 @@
-package com.gmail.necnionch.myplugin.bukkit.itemrecall.listeners;
+package com.gmail.necnionch.myplugin.itemrecall.bukkit.listeners;
 
 import io.lumine.mythic.api.MythicPlugin;
 import io.lumine.mythic.api.items.ItemManager;
