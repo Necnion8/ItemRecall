@@ -1,10 +1,12 @@
 package com.gmail.necnionch.myplugin.itemrecall.bukkit.listeners;
 
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.ItemRecallConfig;
+import com.gmail.necnionch.myplugin.itemrecall.bukkit.event.ItemRecallEvent;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ItemProvider;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ReplaceItem;
 import io.lumine.mythic.api.MythicPlugin;
 import io.lumine.mythic.api.items.ItemManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,9 +20,9 @@ public class MythicMobsListener implements Listener {
     private final ItemRecallConfig config;
     private final ItemManager items;
 
-    public MythicMobsListener(ItemRecallConfig config, MythicPlugin plugin) {
+    public MythicMobsListener(ItemRecallConfig config, MythicPlugin mythicPlugin) {
         this.config = config;
-        this.items = plugin.getItemManager();
+        this.items = mythicPlugin.getItemManager();
     }
 
     private @Nullable ReplaceItem getReplaceItemOfItemStack(ItemStack itemStack) {
@@ -53,7 +55,12 @@ public class MythicMobsListener implements Listener {
 
         if (replaceItem.getNewItem() == null) {
             // remove only
-            item.setItemStack(null);
+            ItemRecallEvent newEvent = new ItemRecallEvent(player, replaceItem, itemStack, null, event);
+            Bukkit.getPluginManager().callEvent(newEvent);
+
+            if (!newEvent.isCancelled()) {
+                item.setItemStack(newEvent.getNewItemStack());
+            }
             return;
         }
 
@@ -63,8 +70,12 @@ public class MythicMobsListener implements Listener {
         }
 
         // replace new item
-        ItemStack newItemStack = newItemProvider.createItem(player);
-        item.setItemStack(newItemStack);
+        ItemRecallEvent newEvent = new ItemRecallEvent(player, replaceItem, itemStack, newItemProvider.createItem(player), event);
+        Bukkit.getPluginManager().callEvent(newEvent);
+
+        if (!newEvent.isCancelled()) {
+            item.setItemStack(newEvent.getNewItemStack());
+        }
     }
 
 }
