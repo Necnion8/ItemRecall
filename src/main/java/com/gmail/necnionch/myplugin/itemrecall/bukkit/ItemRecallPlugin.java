@@ -14,6 +14,8 @@ import java.util.Map;
 public final class ItemRecallPlugin extends JavaPlugin {
     public static final Map<String, ItemProvider> PROVIDERS = Maps.newHashMap();
 
+    private final ItemRecallConfig config = new ItemRecallConfig(this);
+
     public static @Nullable ItemProvider getItemProviderOfType(String type) {
         return PROVIDERS.get(type);
     }
@@ -21,13 +23,14 @@ public final class ItemRecallPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        config.load();
         PluginManager pm = getServer().getPluginManager();
 
         if (pm.isPluginEnabled("MythicMobs")) {
             Object hooked = null;
             try {
                 MythicPlugin mythicPlugin = MythicProvider.get();
-                hooked = new MythicMobsListener(mythicPlugin);
+                hooked = new MythicMobsListener(config, mythicPlugin);
 
             } catch (IllegalStateException e) {
                 getLogger().warning("Unable to hook to MythicMobs: " + e.getMessage());
@@ -41,10 +44,6 @@ public final class ItemRecallPlugin extends JavaPlugin {
             }
         }
 
-    }
-
-    @Override
-    public void onDisable() {
     }
 
 }

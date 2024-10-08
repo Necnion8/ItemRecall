@@ -34,6 +34,7 @@ public class ItemRecallConfig extends BukkitConfigDriver {
     public boolean onLoaded(FileConfiguration config) {
         enableLogging = config.getBoolean("enable-logging", false);
         serializeItems();
+        checkNoProvidedItems();
         getLogger().info("Loaded " + items.size() + " items");
         return true;
     }
@@ -74,6 +75,18 @@ public class ItemRecallConfig extends BukkitConfigDriver {
             itemsOfOldType.put(replaceItem.getOldItem().getType(), replaceItem);
         }
 
+    }
+
+    private void checkNoProvidedItems() {
+        for (ReplaceItem replaceItem : items) {
+            Item newItem = replaceItem.getNewItem();
+            if (newItem == null)
+                continue;
+
+            if (newItem.getProvider() == null) {
+                getLogger().warning("Not provided item: " + newItem.getName() + " (type: " + newItem.getType() + ")");
+            }
+        }
     }
 
 
