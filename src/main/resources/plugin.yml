@@ -1,0 +1,8 @@
+name: ItemRecall
+version: '${version}'
+main: com.gmail.necnionch.myplugin.bukkit.itemrecall.ItemRecallPlugin
+api-version: '1.13'
+author: Necnion8
+
+depend:
+  - MythicMobs
