@@ -122,7 +122,15 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         org.bukkit.entity.Item item = event.getItem();
         ItemStack itemStack = item.getItemStack();
 
-        createReplacer(player, itemStack, event).ifPresent(r -> item.setItemStack(r.get()));
+        createReplacer(player, itemStack, event).ifPresent(r -> {
+            ItemStack newItemStack = r.get();
+            if (newItemStack != null) {
+                item.setItemStack(newItemStack);
+            } else {
+                event.setCancelled(true);
+                item.remove();
+            }
+        });
     }
 
     @EventHandler(ignoreCancelled = true)
