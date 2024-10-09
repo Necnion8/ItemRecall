@@ -16,9 +16,9 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -72,9 +72,9 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
 
         pm.registerEvents(this, this);
 
-        getServer().getOnlinePlayers().stream()
-                .filter(p -> !InventoryType.PLAYER.equals(p.getOpenInventory().getType()))
-                .forEach(playersCloseToScan::add);
+        // PluginManagerによるロードを考慮する
+        getServer().getOnlinePlayers().forEach(p ->
+                replaceInventoryAll(p.getInventory(), p, null));
     }
 
 
@@ -144,6 +144,12 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         }
     }
 
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        replaceInventoryAll(player.getInventory(), player, event);
+    }
 
     @EventHandler(ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
