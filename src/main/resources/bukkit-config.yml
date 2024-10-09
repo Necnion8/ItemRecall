@@ -2,8 +2,13 @@
 # デバッグログをコンソールに出力する
 enable-debug: false
 
-# 置換するアイテム
+# 置換するアイテムの設定
+#   アイテムの指定
+#     "(タイプ):(アイテム)"
+#     タイプにはプラグイン名が入り、アイテムにはアイテムを識別するIDや名前を指定します。
+#     対応しているタイプは mythicmobs のみです。
+#   置換する新しいアイテムを指定する new 項目を省略することで削除のみ実行できます。
 items:
-  - old: "mythicmobs:OldItemTypeName" # 置換元
-    new: "mythicmobs:NewItemTypeName"  # 置換先 (省略可)
-  - "mythicmobs:OldItemTypeName2"  # 削除のみ (短縮)
+  - old: "mythicmobs:OldItemTypeName" # 回収対象のアイテム
+    new: "mythicmobs:NewItemTypeName"  # 置換する新しいアイテム (省略可)
+  - "mythicmobs:OldItemTypeName2"  # 回収対象のアイテム。削除のみ (短縮)
