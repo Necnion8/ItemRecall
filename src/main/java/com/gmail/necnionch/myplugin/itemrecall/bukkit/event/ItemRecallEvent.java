@@ -16,6 +16,7 @@ public class ItemRecallEvent extends Event implements Cancellable {
     private final @NotNull ReplaceItem replace;
     private final @NotNull ItemStack oldItemStack;
     private @Nullable ItemStack newItemStack;
+    private boolean changedNewItemStack;
     private final @Nullable Event baseEvent;
 
     public ItemRecallEvent(@Nullable Player player, @NotNull ReplaceItem replace, @NotNull ItemStack oldItemStack, @Nullable ItemStack newItemStack, @Nullable Event baseEvent) {
@@ -44,10 +45,15 @@ public class ItemRecallEvent extends Event implements Cancellable {
 
     public void setNewItemStack(@Nullable ItemStack itemStack) {
         this.newItemStack = itemStack;
+        this.changedNewItemStack = true;
     }
 
     public @Nullable Event getBaseEvent() {
         return baseEvent;
+    }
+
+    public boolean isChangedNewItemStack() {
+        return changedNewItemStack;
     }
 
     @NotNull

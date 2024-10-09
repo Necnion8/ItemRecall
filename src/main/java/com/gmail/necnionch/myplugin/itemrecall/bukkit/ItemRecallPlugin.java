@@ -101,15 +101,21 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
 
         // replace new item
         ItemStack newItemStack = null;
+        boolean ignore = false;
         try {
             newItemStack = newItemResolver.createItem(player);
         } catch (ItemResolver.UnavailableError e) {
             getLogger().severe("Failed to generate item: (t:" + newItem.getType() + ",i:" + newItem.getName() + "): " + e.getMessage());
+            ignore = true;
         }
         ItemRecallEvent newEvent = new ItemRecallEvent(player, replaceItem, itemStack, newItemStack, event);
         Bukkit.getPluginManager().callEvent(newEvent);
 
-        return newEvent.isCancelled() ? Optional.empty() : Optional.of(newEvent::getNewItemStack);
+        if (newEvent.isChangedNewItemStack()) {
+            ignore = false;
+        }
+
+        return (newEvent.isCancelled() || ignore) ? Optional.empty() : Optional.of(newEvent::getNewItemStack);
     }
 
 
