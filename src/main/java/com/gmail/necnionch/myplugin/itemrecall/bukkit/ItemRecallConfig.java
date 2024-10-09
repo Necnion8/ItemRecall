@@ -17,6 +17,7 @@ import java.util.Optional;
 public class ItemRecallConfig extends BukkitConfigDriver {
 
     private boolean enableLogging;
+    private boolean enableDebug;
     private final List<ReplaceItem> items = Lists.newArrayList();
     private final Multimap<String, ReplaceItem> itemsOfOldType = ArrayListMultimap.create();  // cache
 
@@ -34,6 +35,7 @@ public class ItemRecallConfig extends BukkitConfigDriver {
     @Override
     public boolean onLoaded(FileConfiguration config) {
         enableLogging = config.getBoolean("enable-logging", false);
+        enableDebug = config.getBoolean("enable-debug", false);
         serializeItems();
         fillProviders();
         getLogger().info("Loaded " + items.size() + " items");
@@ -89,6 +91,10 @@ public class ItemRecallConfig extends BukkitConfigDriver {
 
     public boolean isEnableLogging() {
         return enableLogging;
+    }
+
+    public boolean isEnableDebug() {
+        return enableDebug;
     }
 
     public List<ReplaceItem> getItems() {

@@ -1,4 +1,7 @@
 
+# デバッグログをコンソールに出力する
+enable-debug: false
+
 # 処理したログを残す
 enable-logging: false
 

@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -78,6 +79,11 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
     }
 
 
+    public void debugPrint(String m) {
+        if (config.isEnableDebug())
+            getLogger().warning("[DEBUG]: " + m);
+    }
+
     public @Nullable ReplaceItem getReplaceItemOfItemStack(ItemStack itemStack) {
         for (ReplaceItem replaceItem : config.getItems()) {
             ItemResolver resolver = replaceItem.getOldItem().getResolver();
@@ -95,7 +101,10 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         ReplaceItem replaceItem = getReplaceItemOfItemStack(itemStack);
         if (replaceItem == null)
             return Optional.empty();
+        return createReplacer(replaceItem, player, itemStack, event);
+    }
 
+    public Optional<Supplier<ItemStack>> createReplacer(@NotNull ReplaceItem replaceItem, @Nullable Player player, ItemStack itemStack, @Nullable Event event) {
         Item newItem = replaceItem.getNewItem();
         if (newItem == null) {
             // remove only
@@ -130,17 +139,27 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
     }
 
     public void replaceInventoryAll(Inventory inventory, @Nullable Player owner, @Nullable Event event) {
+        debugPrint("replaceInventoryAll -> " + (owner != null ? owner.getName() : inventory));
         ItemStack[] contents = inventory.getContents();
         for (int i = 0; i < contents.length; i++) {
             ItemStack itemStack = contents[i];
             if (itemStack == null)
                 continue;
 
-            Supplier<ItemStack> replacer = createReplacer(owner, itemStack, event).orElse(null);
-            if (replacer == null)
+            ReplaceItem replaceItem = getReplaceItemOfItemStack(itemStack);
+            if (replaceItem == null)
                 continue;
+            debugPrint("== inventory slot: " + i + " ==");
+            debugPrint("  OLD -> " + itemStack);
 
-            inventory.setItem(i, replacer.get());
+            Supplier<ItemStack> replacer = createReplacer(replaceItem, owner, itemStack, event).orElse(null);
+            if (replacer == null) {
+                debugPrint("  NEW -> NO_REPLACER");
+            } else {
+                ItemStack newItemStack = replacer.get();
+                debugPrint("  NEW -> " + newItemStack);
+                inventory.setItem(i, newItemStack);
+            }
         }
     }
 
@@ -212,6 +231,7 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         ItemStack itemStack = event.getCursor();
         if (itemStack != null && getReplaceItemOfItemStack(itemStack) != null) {
             playersCloseToScan.add(player);
+            debugPrint("scan marked to " + player.getName());
         }
     }
 
