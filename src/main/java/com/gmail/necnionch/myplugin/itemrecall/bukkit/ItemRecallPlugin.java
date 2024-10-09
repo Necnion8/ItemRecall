@@ -9,15 +9,20 @@ import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.MythicMobsItemPr
 import com.google.common.collect.Maps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public final class ItemRecallPlugin extends JavaPlugin implements Listener {
     public static final Map<String, ItemProvider> PROVIDERS = Maps.newHashMap();
@@ -75,19 +80,10 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         return null;
     }
 
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPickup(EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof Player))
-            return;
-
-        Player player = (Player) event.getEntity();
-        org.bukkit.entity.Item item = event.getItem();
-        ItemStack itemStack = item.getItemStack();
-
+    public Optional<Supplier<ItemStack>> createReplacer(Player player, ItemStack itemStack, @Nullable Event event) {
         ReplaceItem replaceItem = getReplaceItemOfItemStack(itemStack);
         if (replaceItem == null)
-            return;
+            return Optional.empty();
 
         Item newItem = replaceItem.getNewItem();
         if (newItem == null) {
@@ -95,15 +91,12 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
             ItemRecallEvent newEvent = new ItemRecallEvent(player, replaceItem, itemStack, null, event);
             Bukkit.getPluginManager().callEvent(newEvent);
 
-            if (!newEvent.isCancelled()) {
-                item.setItemStack(newEvent.getNewItemStack());
-            }
-            return;
+            return newEvent.isCancelled() ? Optional.empty() : Optional.of(newEvent::getNewItemStack);
         }
 
         ItemResolver newItemResolver = newItem.getResolver();
         if (newItemResolver == null) {
-            return;  // not provided!!!
+            return Optional.empty();  // newItem作成できない場合は、oldItemを削除せず何もしない
         }
 
         // replace new item
@@ -116,9 +109,29 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         ItemRecallEvent newEvent = new ItemRecallEvent(player, replaceItem, itemStack, newItemStack, event);
         Bukkit.getPluginManager().callEvent(newEvent);
 
-        if (!newEvent.isCancelled()) {
-            item.setItemStack(newEvent.getNewItemStack());
-        }
+        return newEvent.isCancelled() ? Optional.empty() : Optional.of(newEvent::getNewItemStack);
+    }
+
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPickup(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player))
+            return;
+
+        Player player = (Player) event.getEntity();
+        org.bukkit.entity.Item item = event.getItem();
+        ItemStack itemStack = item.getItemStack();
+
+        createReplacer(player, itemStack, event).ifPresent(r -> item.setItemStack(r.get()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onSelect(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        PlayerInventory inv = player.getInventory();
+        ItemStack itemStack = inv.getItem(event.getNewSlot());
+
+        createReplacer(player, itemStack, event).ifPresent(r -> inv.setItem(event.getNewSlot(), r.get()));
     }
 
 }
