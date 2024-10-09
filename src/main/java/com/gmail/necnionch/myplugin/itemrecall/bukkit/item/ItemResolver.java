@@ -9,7 +9,7 @@ public interface ItemResolver {
 
     boolean matchItem(@NotNull ItemStack itemStack);
 
-    @Nullable ItemStack createItem(@Nullable Player player) throws UnavailableError;
+    @Nullable ItemStack createItem(@Nullable Player player, int amount) throws UnavailableError;
 
 
     class UnavailableError extends Exception {

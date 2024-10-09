@@ -104,7 +104,7 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         ItemStack newItemStack = null;
         boolean ignore = false;
         try {
-            newItemStack = newItemResolver.createItem(player);
+            newItemStack = newItemResolver.createItem(player, itemStack.getAmount());
         } catch (ItemResolver.UnavailableError e) {
             getLogger().severe("Failed to generate item: (t:" + newItem.getType() + ",i:" + newItem.getName() + "): " + e.getMessage());
             ignore = true;

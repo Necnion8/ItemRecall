@@ -63,9 +63,9 @@ public class MythicMobsItemProvider implements ItemProvider {
         }
 
         @Override
-        public ItemStack createItem(@Nullable Player player) throws UnavailableError {
+        public ItemStack createItem(@Nullable Player player, int amount) throws UnavailableError {
             return itemManager.getItem(item)
-                    .map(mItem -> mItem.generateItemStack(1))
+                    .map(mItem -> mItem.generateItemStack(amount))
                     .map(BukkitAdapter::adapt)
                     .orElseThrow(UnavailableError::new);
         }
