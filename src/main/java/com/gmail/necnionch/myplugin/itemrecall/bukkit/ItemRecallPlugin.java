@@ -233,6 +233,12 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
             playersCloseToScan.add(player);
             debugPrint("scan marked to " + player.getName());
         }
+
+        itemStack = event.getCurrentItem();
+        if (itemStack != null && getReplaceItemOfItemStack(itemStack) != null) {
+            playersCloseToScan.add(player);
+            debugPrint("scan marked to " + player.getName());
+        }
     }
 
     @EventHandler
