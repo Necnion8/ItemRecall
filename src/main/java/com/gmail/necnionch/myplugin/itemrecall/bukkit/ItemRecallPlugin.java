@@ -7,14 +7,19 @@ import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ItemResolver;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ReplaceItem;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.MythicMobsItemProvider;
 import com.google.common.collect.Maps;
-import org.bukkit.Bukkit;
+import com.google.common.collect.Sets;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
@@ -23,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public final class ItemRecallPlugin extends JavaPlugin implements Listener {
@@ -65,6 +71,10 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         }
 
         pm.registerEvents(this, this);
+
+        getServer().getOnlinePlayers().stream()
+                .filter(p -> !InventoryType.PLAYER.equals(p.getOpenInventory().getType()))
+                .forEach(playersCloseToScan::add);
     }
 
 
@@ -81,7 +91,7 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         return null;
     }
 
-    public Optional<Supplier<ItemStack>> createReplacer(Player player, ItemStack itemStack, @Nullable Event event) {
+    public Optional<Supplier<ItemStack>> createReplacer(@Nullable Player player, ItemStack itemStack, @Nullable Event event) {
         ReplaceItem replaceItem = getReplaceItemOfItemStack(itemStack);
         if (replaceItem == null)
             return Optional.empty();
@@ -90,7 +100,7 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         if (newItem == null) {
             // remove only
             ItemRecallEvent newEvent = new ItemRecallEvent(player, replaceItem, itemStack, null, event);
-            Bukkit.getPluginManager().callEvent(newEvent);
+            getServer().getPluginManager().callEvent(newEvent);
 
             return newEvent.isCancelled() ? Optional.empty() : Optional.of(newEvent::getNewItemStack);
         }
@@ -110,13 +120,28 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
             ignore = true;
         }
         ItemRecallEvent newEvent = new ItemRecallEvent(player, replaceItem, itemStack, newItemStack, event);
-        Bukkit.getPluginManager().callEvent(newEvent);
+        getServer().getPluginManager().callEvent(newEvent);
 
         if (newEvent.isChangedNewItemStack()) {
             ignore = false;
         }
 
         return (newEvent.isCancelled() || ignore) ? Optional.empty() : Optional.of(newEvent::getNewItemStack);
+    }
+
+    public void replaceInventoryAll(Inventory inventory, @Nullable Player owner, @Nullable Event event) {
+        ItemStack[] contents = inventory.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack itemStack = contents[i];
+            if (itemStack == null)
+                continue;
+
+            Supplier<ItemStack> replacer = createReplacer(owner, itemStack, event).orElse(null);
+            if (replacer == null)
+                continue;
+
+            inventory.setItem(i, replacer.get());
+        }
     }
 
 
@@ -163,6 +188,33 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
                 item.remove();
             }
         });
+    }
+
+    private final Set<Player> playersCloseToScan = Sets.newHashSet();
+
+    @EventHandler
+    public void onClickInv(InventoryClickEvent event) {
+        if (InventoryAction.NOTHING.equals(event.getAction()))
+            return;
+        if (!(event.getWhoClicked() instanceof Player))
+            return;
+
+        Player player = (Player) event.getWhoClicked();
+        if (playersCloseToScan.contains(player))
+            return;
+
+        ItemStack itemStack = event.getCursor();
+        if (itemStack != null && getReplaceItemOfItemStack(itemStack) != null) {
+            playersCloseToScan.add(player);
+        }
+    }
+
+    @EventHandler
+    public void onCloseInv(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (playersCloseToScan.remove(player)) {
+            replaceInventoryAll(player.getInventory(), player, event);
+        }
     }
 
 }
