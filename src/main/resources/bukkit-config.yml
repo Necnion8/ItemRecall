@@ -2,9 +2,6 @@
 # デバッグログをコンソールに出力する
 enable-debug: false
 
-# 処理したログを残す
-enable-logging: false
-
 # 置換するアイテム
 items:
   - old: "mythicmobs:OldItemTypeName" # 置換元
