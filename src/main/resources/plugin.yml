@@ -3,6 +3,8 @@ version: '${version}'
 main: com.gmail.necnionch.myplugin.itemrecall.bukkit.ItemRecallPlugin
 api-version: '1.13'
 author: Necnion8
+website: https://github.com/Necnion8/ItemRecall
+description: "回収対応になったアイテムを削除、または置換するプラグイン"
 
 depend:
   - MythicMobs
