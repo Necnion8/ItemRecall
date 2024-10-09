@@ -1,14 +1,17 @@
 package com.gmail.necnionch.myplugin.itemrecall.bukkit.item;
 
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface ItemProvider {
+    @Nullable ItemResolver create(Item item) throws InvalidError;
 
-    boolean matchItem(@NotNull ItemStack itemStack);
+    class InvalidError extends Exception {
+        public InvalidError() {
+            super();
+        }
 
-    ItemStack createItem(@Nullable Player player);
-
+        public InvalidError(String message) {
+            super(message);
+        }
+    }
 }

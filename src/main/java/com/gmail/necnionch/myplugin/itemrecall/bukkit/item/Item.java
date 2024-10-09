@@ -9,12 +9,12 @@ public class Item {
 
     private final String type;
     private final String item;
-    private @Nullable ItemProvider provider;
+    private @Nullable ItemResolver resolver;
 
-    public Item(String type, String item, @Nullable ItemProvider provider) {
+    public Item(String type, String item, @Nullable ItemResolver resolver) {
         this.type = type;
         this.item = item;
-        this.provider = provider;
+        this.resolver = resolver;
     }
 
     public String getType() {
@@ -26,15 +26,15 @@ public class Item {
     }
 
     @Nullable
-    public ItemProvider getProvider() {
-        if (provider == null) {
-            provider = ItemRecallPlugin.getItemProviderOfType(type);
+    public ItemResolver getResolver() {
+        if (resolver == null) {
+            resolver = ItemRecallPlugin.createItemResolver(this);
         }
-        return provider;
+        return resolver;
     }
 
-    public void setProvider(@Nullable ItemProvider provider) {
-        this.provider = provider;
+    public void setResolver(@Nullable ItemResolver resolver) {
+        this.resolver = resolver;
     }
 
 
