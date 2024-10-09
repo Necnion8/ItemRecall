@@ -13,6 +13,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -146,6 +147,22 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         ItemStack itemStack = inv.getItem(event.getNewSlot());
 
         createReplacer(player, itemStack, event).ifPresent(r -> inv.setItem(event.getNewSlot(), r.get()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDrop(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        org.bukkit.entity.Item item = event.getItemDrop();
+
+        createReplacer(player, item.getItemStack(), event).ifPresent(r -> {
+            ItemStack newItemStack = r.get();
+            if (newItemStack != null) {
+                item.setItemStack(newItemStack);
+            } else {
+                event.setCancelled(true);
+                item.remove();
+            }
+        });
     }
 
 }
