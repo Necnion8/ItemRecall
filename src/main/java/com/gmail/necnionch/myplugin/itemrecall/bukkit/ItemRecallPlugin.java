@@ -77,7 +77,7 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         // PluginManagerによるロードを考慮する
         getServer().getOnlinePlayers()
                 .stream()
-                .filter(p -> p.hasPermission(BYPASS_PERMISSION))
+                .filter(p -> !p.hasPermission(BYPASS_PERMISSION))
                 .forEach(p -> replaceInventoryAll(p.getInventory(), p, null));
     }
 
