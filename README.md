@@ -14,7 +14,12 @@
 - MythicMobs (v5.6.2で確認)
 
 ## コマンドと権限
-今のところ無し
+- アイテムを処理しない権限
+> 権限: `itemrecall.bypass`
+<br>
+
+- 管理者用権限 - (bypass権限を含む)
+> 権限: `itemrecall.admin` (default: OP)
 
 ## 設定
 ```yml
