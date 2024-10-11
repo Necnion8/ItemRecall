@@ -8,3 +8,13 @@ description: "回収対応になったアイテムを削除、または置換す
 
 depend:
   - MythicMobs
+
+permissions:
+  itemrecall.admin:
+    default: op
+    children:
+      - itemrecall.bypass
+
+  itemrecall.bypass:
+    default: false
+    description: "この権限を持っている人は、対象のアイテムを処理しません"

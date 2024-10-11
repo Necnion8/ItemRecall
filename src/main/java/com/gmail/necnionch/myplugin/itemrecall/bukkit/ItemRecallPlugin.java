@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public final class ItemRecallPlugin extends JavaPlugin implements Listener {
+    public static final String BYPASS_PERMISSION = "itemrecall.bypass";
     public static final Map<String, ItemProvider> PROVIDERS = Maps.newHashMap();
 
     private final ItemRecallConfig config = new ItemRecallConfig(this);
@@ -167,6 +168,9 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        if (player.hasPermission(BYPASS_PERMISSION))
+            return;
+
         replaceInventoryAll(player.getInventory(), player, event);
     }
 
@@ -176,6 +180,9 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
             return;
 
         Player player = (Player) event.getEntity();
+        if (player.hasPermission(BYPASS_PERMISSION))
+            return;
+
         org.bukkit.entity.Item item = event.getItem();
         ItemStack itemStack = item.getItemStack();
 
@@ -193,6 +200,9 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onSelect(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
+        if (player.hasPermission(BYPASS_PERMISSION))
+            return;
+
         PlayerInventory inv = player.getInventory();
         ItemStack itemStack = inv.getItem(event.getNewSlot());
 
@@ -202,6 +212,9 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
+        if (player.hasPermission(BYPASS_PERMISSION))
+            return;
+
         org.bukkit.entity.Item item = event.getItemDrop();
 
         createReplacer(player, item.getItemStack(), event).ifPresent(r -> {
@@ -245,6 +258,8 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
     public void onCloseInv(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         if (playersCloseToScan.remove(player)) {
+            if (player.hasPermission(BYPASS_PERMISSION))
+                return;
             replaceInventoryAll(player.getInventory(), player, event);
         }
     }
