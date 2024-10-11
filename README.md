@@ -11,7 +11,9 @@
 
 ## 前提
 - Spigot 1.13 以上 (またはその派生)
-- MythicMobs (v5.6.2で確認)
+- 連携プラグイン (オプション)
+  - MythicMobs (v5.6.2で確認)
+  - MMOItems (v6.9.4で確認)
 
 ## コマンドと権限
 - アイテムを処理しない権限
@@ -30,12 +32,12 @@ enable-debug: false
 #   アイテムの指定
 #     "(タイプ):(アイテム)"
 #     タイプにはプラグイン名が入り、アイテムにはアイテムを識別するIDや名前を指定します。
-#     対応しているタイプは mythicmobs のみです。
+#     対応しているタイプは mythicmobs, mmoitems です。
 #   置換する新しいアイテムを指定する new 項目を省略することで削除のみ実行できます。
 items:
   - old: "mythicmobs:OldItemTypeName" # 回収対象のアイテム
     new: "mythicmobs:NewItemTypeName"  # 置換する新しいアイテム (省略可)
-  - "mythicmobs:OldItemTypeName2"  # 回収対象のアイテム。削除のみ (短縮)
+  - "mmoitems:ITEM_TYPE:ITEM_ID"  # 回収対象のアイテム。削除のみ (短縮)
 ```
 
 #### アイテム設定例
@@ -45,7 +47,7 @@ items:
   - old: "mythicmobs:DiamondKingSword"
     new: "mythicmobs:IronKingSword"
     
-  # MythicMobs DiamondKingHelmet を削除する (置き換えない)
-  - old: "mythicmobs:DiamondKingHelmet"
+  # MMOItems SWORDタイプ AMETHYST_SWORD を削除する (置き換えない)
+  - old: "mmoitems:SWORD:AMETHYST_SWORD"
 ```
 (注) 置換後のアイテム(new)が指定されているにも関わらず、存在しないアイテムまたは作成できない場合は置換元のアイテムを削除しません。

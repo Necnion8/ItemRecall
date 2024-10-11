@@ -5,6 +5,7 @@ import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.Item;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ItemProvider;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ItemResolver;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ReplaceItem;
+import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.MMOItemsProvider;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.MythicMobsItemProvider;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -71,6 +72,18 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
             PROVIDERS.put("mythicmobs", provider);
             getLogger().info("Hooked to MythicMobs");
         }
+
+        provider = null;
+        try {
+            provider = MMOItemsProvider.tryHook();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        if (provider != null) {
+            PROVIDERS.put("mmoitems", provider);
+            getLogger().info("Hooked to MMOItems");
+        }
+
 
         pm.registerEvents(this, this);
 

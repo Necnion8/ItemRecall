@@ -6,8 +6,9 @@ author: Necnion8
 website: https://github.com/Necnion8/ItemRecall
 description: "回収対応になったアイテムを削除、または置換するプラグイン"
 
-depend:
+softdepend:
   - MythicMobs
+  - MMOItems
 
 permissions:
   itemrecall.admin:
