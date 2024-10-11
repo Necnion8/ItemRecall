@@ -75,8 +75,10 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         pm.registerEvents(this, this);
 
         // PluginManagerによるロードを考慮する
-        getServer().getOnlinePlayers().forEach(p ->
-                replaceInventoryAll(p.getInventory(), p, null));
+        getServer().getOnlinePlayers()
+                .stream()
+                .filter(p -> p.hasPermission(BYPASS_PERMISSION))
+                .forEach(p -> replaceInventoryAll(p.getInventory(), p, null));
     }
 
 
