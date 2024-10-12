@@ -9,6 +9,7 @@ description: "回収対応になったアイテムを削除、または置換す
 softdepend:
   - MythicMobs
   - MMOItems
+  - ItemsAdder
 
 permissions:
   itemrecall.admin:
