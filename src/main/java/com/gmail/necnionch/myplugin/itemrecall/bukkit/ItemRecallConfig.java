@@ -1,6 +1,7 @@
 package com.gmail.necnionch.myplugin.itemrecall.bukkit;
 
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.Item;
+import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ItemResolver;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ReplaceItem;
 import com.gmail.necnionch.myplugin.itemrecall.common.BukkitConfigDriver;
 import com.google.common.collect.ArrayListMultimap;
@@ -12,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class ItemRecallConfig extends BukkitConfigDriver {
 
@@ -79,9 +79,17 @@ public class ItemRecallConfig extends BukkitConfigDriver {
 
     public void fillProviders() {
         for (ReplaceItem replaceItem : items) {
-            replaceItem.getOldItem().getResolver();
-            Optional.ofNullable(replaceItem.getNewItem())
-                    .ifPresent(Item::getResolver);
+            ItemResolver resolver = replaceItem.getOldItem().getResolver();
+            if (resolver == null) {
+                getLogger().warning("Not registered item provider: " + replaceItem.getOldItem().getType());
+            }
+            Item newItem = replaceItem.getNewItem();
+            if (newItem != null) {
+                resolver = newItem.getResolver();
+                if (resolver == null) {
+                    getLogger().warning("Not registered item provider: " + newItem.getType());
+                }
+            }
         }
     }
 

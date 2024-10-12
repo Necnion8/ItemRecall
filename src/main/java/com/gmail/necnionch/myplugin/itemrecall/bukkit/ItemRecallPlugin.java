@@ -47,10 +47,9 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
 
     public static @Nullable ItemResolver createItemResolver(Item item) {
         ItemProvider itemProvider = PROVIDERS.get(item.getType());
-        if (itemProvider == null) {
-            INSTANCE.getLogger().warning("Not registered item provider: " + item.getType());
+        if (itemProvider == null)
             return null;
-        }
+
         try {
             return itemProvider.create(item);
         } catch (ItemProvider.InvalidError e) {
