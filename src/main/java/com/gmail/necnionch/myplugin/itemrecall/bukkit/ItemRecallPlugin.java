@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public final class ItemRecallPlugin extends JavaPlugin implements Listener {
+    private static ItemRecallPlugin INSTANCE;
     public static final String BYPASS_PERMISSION = "itemrecall.bypass";
     public static final Map<String, ItemProvider> PROVIDERS = Maps.newHashMap();
 
@@ -46,17 +47,24 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
 
     public static @Nullable ItemResolver createItemResolver(Item item) {
         ItemProvider itemProvider = PROVIDERS.get(item.getType());
-        if (itemProvider == null)
+        if (itemProvider == null) {
+            INSTANCE.getLogger().warning("Not registered item provider: " + item.getType());
             return null;
+        }
         try {
             return itemProvider.create(item);
         } catch (ItemProvider.InvalidError e) {
-            ItemRecallPlugin.getPlugin(ItemRecallPlugin.class).getLogger().severe(
+            INSTANCE.getLogger().severe(
                     "Failed to create item resolver: (t:" + item.getType() + ",i:" + item.getName() + "): " + e.getMessage());
             return null;
         }
     }
 
+
+    @Override
+    public void onLoad() {
+        INSTANCE = this;
+    }
 
     @Override
     public void onEnable() {
@@ -96,7 +104,7 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
             getLogger().info("Hooked to ItemsAdder");
         }
 
-
+        config.fillProviders();
         pm.registerEvents(this, this);
 
         // PluginManagerによるロードを考慮する

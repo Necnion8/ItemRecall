@@ -35,7 +35,6 @@ public class ItemRecallConfig extends BukkitConfigDriver {
     public boolean onLoaded(FileConfiguration config) {
         enableDebug = config.getBoolean("enable-debug", false);
         serializeItems();
-        fillProviders();
         getLogger().info("Loaded " + items.size() + " items");
         return true;
     }
@@ -78,7 +77,7 @@ public class ItemRecallConfig extends BukkitConfigDriver {
 
     }
 
-    private void fillProviders() {
+    public void fillProviders() {
         for (ReplaceItem replaceItem : items) {
             replaceItem.getOldItem().getResolver();
             Optional.ofNullable(replaceItem.getNewItem())
