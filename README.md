@@ -33,7 +33,7 @@ enable-debug: false
 #   アイテムの指定
 #     "(タイプ):(アイテム)"
 #     タイプにはプラグイン名が入り、アイテムにはアイテムを識別するIDや名前を指定します。
-#     対応しているタイプは mythicmobs, mmoitems, itemsadder です。
+#     対応しているタイプは mythicmobs, mmoitems, itemsadder, bukkit-values です。
 #   置換する新しいアイテムを指定する new 項目を省略することで削除のみ実行できます。
 items:
   - old: "mythicmobs:OldItemTypeName" # 回収対象のアイテム
@@ -54,6 +54,9 @@ items:
 
   # ItemsAdder my_items:mysword を削除する (置き換えない)
   - old: "itemsadder:my_items:mysword"
+
+  # AdvancedEnchantments Black Scroll を削除する (置き換えない)
+  - old: "bukkit-values:advancedenchantments:blackscroll"
 ```
 (注) 置換後のアイテム(new)が指定されているにも関わらず、存在しないアイテムまたは作成できない場合は置換元のアイテムを削除しません。
 
