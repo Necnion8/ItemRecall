@@ -119,7 +119,7 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
             getLogger().warning("[DEBUG]: " + m);
     }
 
-    public @Nullable ReplaceItem getReplaceItemOfItemStack(ItemStack itemStack) {
+    public @Nullable ReplaceItem getReplaceItemOfItemStack(@NotNull ItemStack itemStack) {
         for (ReplaceItem replaceItem : config.getItems()) {
             ItemResolver resolver = replaceItem.getOldItem().getResolver();
             if (resolver == null)
@@ -132,14 +132,14 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         return null;
     }
 
-    public Optional<Supplier<ItemStack>> createReplacer(@Nullable Player player, ItemStack itemStack, @Nullable Event event) {
+    public Optional<Supplier<ItemStack>> createReplacer(@Nullable Player player, @NotNull ItemStack itemStack, @Nullable Event event) {
         ReplaceItem replaceItem = getReplaceItemOfItemStack(itemStack);
         if (replaceItem == null)
             return Optional.empty();
         return createReplacer(replaceItem, player, itemStack, event);
     }
 
-    public Optional<Supplier<ItemStack>> createReplacer(@NotNull ReplaceItem replaceItem, @Nullable Player player, ItemStack itemStack, @Nullable Event event) {
+    public Optional<Supplier<ItemStack>> createReplacer(@NotNull ReplaceItem replaceItem, @Nullable Player player, @NotNull ItemStack itemStack, @Nullable Event event) {
         Item newItem = replaceItem.getNewItem();
         if (newItem == null) {
             // remove only
@@ -239,6 +239,8 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
 
         PlayerInventory inv = player.getInventory();
         ItemStack itemStack = inv.getItem(event.getNewSlot());
+        if (itemStack == null)
+            return;
 
         createReplacer(player, itemStack, event).ifPresent(r -> inv.setItem(event.getNewSlot(), r.get()));
     }
