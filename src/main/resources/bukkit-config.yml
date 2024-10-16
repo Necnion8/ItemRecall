@@ -6,7 +6,7 @@ enable-debug: false
 #   アイテムの指定
 #     "(タイプ):(アイテム)"
 #     タイプにはプラグイン名が入り、アイテムにはアイテムを識別するIDや名前を指定します。
-#     対応しているタイプは mythicmobs, mmoitems, itemsadder です。
+#     対応しているタイプは mythicmobs, mmoitems, itemsadder, bukkit-values です。
 #   置換する新しいアイテムを指定する new 項目を省略することで削除のみ実行できます。
 items:
   - old: "mythicmobs:OldItemTypeName" # 回収対象のアイテム

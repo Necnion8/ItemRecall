@@ -8,6 +8,7 @@ import com.gmail.necnionch.myplugin.itemrecall.bukkit.item.ReplaceItem;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.ItemsAdderProvider;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.MMOItemsProvider;
 import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.MythicMobsItemProvider;
+import com.gmail.necnionch.myplugin.itemrecall.bukkit.providers.PersistentDataItemProvider;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.bukkit.entity.Player;
@@ -101,6 +102,16 @@ public final class ItemRecallPlugin extends JavaPlugin implements Listener {
         if (provider != null) {
             PROVIDERS.put("itemsadder", provider);
             getLogger().info("Hooked to ItemsAdder");
+        }
+
+        provider = null;
+        try {
+            provider = PersistentDataItemProvider.tryHook();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        if (provider != null) {
+            PROVIDERS.put("bukkit-values", provider);
         }
 
         config.fillProviders();
